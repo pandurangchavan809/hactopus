@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up - Complaint Management Dashboard</title>
+  
   <style>
     body {
       margin: 0;
@@ -78,6 +79,7 @@
       text-decoration: underline;
     }
   </style>
+  <script type="module" src="signup.js" defer></script>
 </head>
 <body>
   <div class="signup-container">
@@ -95,8 +97,8 @@
       <label for="confirm-password">Confirm Password</label>
       <input type="password" id="confirm-password" name="confirm-password" required>
 
-      <button type="button">
-        <a href="dashboard.html" style="color:white; text-decoration:none;">Sign Up</a>
+      <button id="submit" type="button">
+        <a style="color:white; text-decoration:none;">Sign Up</a>
       </button>
       
     </form>
