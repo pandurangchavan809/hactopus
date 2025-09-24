@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hactopus Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --pink: #ff69b4;
+            --sky-blue: #87ceeb;
+            --purple: #9370db;
+            --white: #ffffff;
+            --light-pink: #ffb3e6;
+            --light-purple: #dda0dd;
+            --light-blue: #e0f6ff;
+            --dark-purple: #663399;
+            --gradient-1: linear-gradient(135deg, var(--pink), var(--purple));
+            --gradient-2: linear-gradient(135deg, var(--sky-blue), var(--purple));
+            --gradient-3: linear-gradient(135deg, var(--light-pink), var(--light-purple));
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #f8f0ff 100%);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--gradient-1);
+            padding: 2rem 0;
+            z-index: 1000;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .logo h1 {
+            color: var(--white);
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .logo p {
+            color: var(--light-pink);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-link i {
+            margin-right: 1rem;
+            font-size: 1.1rem;
+            width: 20px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--dark-purple);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .stat-card:nth-child(2)::before { background: var(--gradient-2); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(135deg, var(--sky-blue), var(--pink)); }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .stat-card:nth-child(1) .stat-icon { background: var(--gradient-1); }
+        .stat-card:nth-child(2) .stat-icon { background: var(--gradient-2); }
+        .stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+        .stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, var(--sky-blue), var(--pink)); }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--dark-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .stat-change.positive { color: #10b981; }
+        .stat-change.negative { color: #ef4444; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-title {
+            color: var(--dark-purple);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: var(--gradient-2);
+            color: var(--white);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .dispute-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dispute-table th,
+        .dispute-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dispute-table th {
+            background: var(--light-blue);
+            color: var(--dark-purple);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .dispute-table tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-active { background: #dcfce7; color: #16a34a; }
+        .status-resolved { background: #e0e7ff; color: #4f46e5; }
+
+        .recent-activity {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .activity-icon.new { background: var(--light-pink); color: var(--pink); }
+        .activity-icon.update { background: var(--light-blue); color: var(--sky-blue); }
+        .activity-icon.resolved { background: var(--light-purple); color: var(--purple); }
+
+        .activity-content h4 {
+            color: var(--dark-purple);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-content p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .chart-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: var(--gradient-3);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-purple);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-action:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <h1>🐙 Hactopus</h1>
+            <p>AI-Powered ODR Platform</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-gavel"></i>
+                    All Disputes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    User Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-user-tie"></i>
+                    Mediators
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-robot"></i>
+                    AI Analytics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-download"></i>
+                    Downloads
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <div class="user-profile">
+                <div class="user-avatar">AD</div>
+                <div>
+                    <div style="font-weight: 600; color: var(--dark-purple);">Admin User</div>
+                    <div style="font-size: 0.8rem; color: #666;">Super Administrator</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Total Disputes</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 12% this month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">892</div>
+                <div class="stat-label">Active Users</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 8% this month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number">89.2%</div>
+                <div class="stat-label">Resolution Rate</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> 3% this month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">2.4</div>
+                <div class="stat-label">Avg. Days to Resolve</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> 15% faster
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Disputes</h3>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-eye"></i>
+                        View All
+                    </a>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="dispute-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>AI Confidence</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#1247</td>
+                                <td>Payment dispute with contractor</td>
+                                <td>Financial</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td>94%</td>
+                                <td>2 hours ago</td>
+                            </tr>
+                            <tr>
+                                <td>#1246</td>
+                                <td>Service delivery complaint</td>
+                                <td>Service</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td>87%</td>
+                                <td>5 hours ago</td>
+                            </tr>
+                            <tr>
+                                <td>#1245</td>
+                                <td>Product quality issue</td>
+                                <td>Consumer</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                                <td>96%</td>
+                                <td>1 day ago</td>
+                            </tr>
+                            <tr>
+                                <td>#1244</td>
+                                <td>Contract breach claim</td>
+                                <td>Legal</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td>91%</td>
+                                <td>2 days ago</td>
+                            </tr>
+                            <tr>
+                                <td>#1243</td>
+                                <td>Refund request processing</td>
+                                <td>Financial</td>
+                                <td><span class="status-badge status-resolved">Resolved</span></td>
+                                <td>98%</td>
+                                <td>3 days ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-history"></i>
+                        View Log
+                    </a>
+                </div>
+                <div class="recent-activity">
+                    <div class="activity-item">
+                        <div class="activity-icon new">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>New dispute submitted</h4>
+                            <p>Payment dispute #1247 by John Doe</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon resolved">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>Dispute resolved</h4>
+                            <p>Case #1245 successfully closed</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon update">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>AI suggestion updated</h4>
+                            <p>Settlement recommendation for #1246</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon new">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>New user registered</h4>
+                            <p>Sarah Johnson joined as mediator</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon update">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>Evidence uploaded</h4>
+                            <p>3 documents added to case #1244</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="card-header">
+                <h3 class="card-title">Dispute Analytics</h3>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Export Data
+                    </a>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-chart-bar"></i>
+                        Detailed View
+                    </a>
+                </div>
+            </div>
+            <div class="chart-placeholder">
+                📊 Interactive Charts & Analytics Dashboard
+                <br><br>
+                <i class="fas fa-chart-line" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-action" onclick="openQuickActions()">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <script>
+        // Sample JavaScript for interactivity
+        function openQuickActions() {
+            alert('Quick Actions Menu\n\n• Create New Dispute\n• Add User\n• Generate Report\n• System Settings');
+        }
+
+        // Simulate real-time updates
+        function updateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const currentValue = parseInt(stat.textContent.replace(/[^\d.]/g, ''));
+                if (Math.random() > 0.7) { // 30% chance to update
+                    const change = Math.random() > 0.5 ? 1 : -1;
+                    if (stat.textContent.includes('%')) {
+                        stat.textContent = (currentValue + change * 0.1).toFixed(1) + '%';
+                    } else if (stat.textContent.includes('.')) {
+                        stat.textContent = (currentValue + change * 0.1).toFixed(1);
+                    } else {
+                        stat.textContent = currentValue + change;
+                    }
+                }
+            });
+        }
+
+        // Update stats every 30 seconds
+        setInterval(updateStats, 30000);
+
+        // Add hover effects and smooth scrolling
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add click effects to cards
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-5px)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
