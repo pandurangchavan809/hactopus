@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Dashboard - Basic Reference</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }
+        .dashboard { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card h2 { margin-bottom: 15px; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .form-group textarea { height: 100px; resize: vertical; }
+        .btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 10px; margin-bottom: 10px; }
+        .btn:hover { background: #0056b3; }
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        .btn-info { background: #17a2b8; }
+        .btn-info:hover { background: #117a8b; }
+        .suggestions { background: #e9f7ff; border: 1px solid #b8e6ff; padding: 15px; border-radius: 4px; margin-top: 15px; }
+        .suggestions h3 { color: #0066cc; margin-bottom: 10px; }
+        .suggestion-item { background: white; padding: 10px; margin-bottom: 8px; border-radius: 4px; border-left: 3px solid #007bff; }
+        .rights-section { grid-column: span 2; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 20px; }
+        .rights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .right-item { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #28a745; cursor: pointer; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-resolved { background: #d4edda; color: #155724; }
+        .complaint-history { margin-top: 20px; }
+        .complaint-item { background: #f8f9fa; padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #6c757d; }
+        .hidden { display: none; }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; } .rights-section { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <h1>Complaint Management Dashboard</h1>
+            <p>Submit complaints and explore your rights</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Complaint Form -->
+            <div class="card">
+                <h2>Submit New Complaint</h2>
+                <form id="complaintForm">
+                    <div class="form-group">
+                        <label for="complaintType">Complaint Type</label>
+                        <select id="complaintType" name="complaintType">
+                            <option value="">Select complaint type</option>
+                            <option value="product_defect">Product Defect</option>
+                            <option value="service_issue">Service Issue</option>
+                            <option value="billing_problem">Billing Problem</option>
+                            <option value="delivery_delay">Delivery Delay</option>
+                            <option value="customer_service">Customer Service</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" placeholder="Brief description of the issue">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Detailed Description</label>
+                        <textarea id="description" name="description" placeholder="Please describe your issue in detail"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">Submit Complaint</button>
+                    <button type="button" class="btn btn-info" onclick="getSuggestions()">Get AI Suggestions</button>
+                </form>
+
+                <!-- API Suggestions -->
+                <div id="suggestionsContainer" class="suggestions hidden">
+                    <h3>Suggested Actions</h3>
+                    <div id="suggestionsContent"></div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h2>Quick Actions</h2>
+                <button class="btn btn-success" onclick="showRights()">View My Rights</button>
+                <button class="btn" onclick="trackComplaint()">Track Complaint</button>
+                <button class="btn btn-info" onclick="contactSupport()">Contact Support</button>
+
+                <div class="complaint-history">
+                    <h3>Recent Complaints</h3>
+                    <div class="complaint-item">
+                        <strong>Product Defect - #12345</strong>
+                        <span class="status-badge status-pending">Pending</span>
+                        <p>Submitted: 2024-01-15</p>
+                    </div>
+                    <div class="complaint-item">
+                        <strong>Service Issue - #12344</strong>
+                        <span class="status-badge status-resolved">Resolved</span>
+                        <p>Submitted: 2024-01-10</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rights Section -->
+        <div class="rights-section hidden" id="rightsSection">
+            <h2>Your Consumer Rights</h2>
+            <p>These are your fundamental rights as a consumer. Click on any right to learn more.</p>
+            <div class="rights-grid">
+                <div class="right-item" onclick="showRightDetails('right_to_return')">
+                    <h4>Right to Return</h4>
+                    <p>You have the right to return products within a specified period if they don't meet your expectations.</p>
+                </div>
+                <div class="right-item" onclick="showRightDetails('right_to_refund')">
+                    <h4>Right to Refund</h4>
+                    <p>You're entitled to a full refund for defective products or unsatisfactory services.</p>
+                </div>
+                <div class="right-item" onclick="showRightDetails('right_to_repair')">
+                    <h4>Right to Repair</h4>
+                    <p>You have the right to have defective products repaired at no additional cost.</p>
+                </div>
+                <div class="right-item" onclick="showRightDetails('right_to_information')">
+                    <h4>Right to Information</h4>
+                    <p>You have the right to clear, accurate information about products and services.</p>
+                </div>
+                <div class="right-item" onclick="showRightDetails('right_to_safety')">
+                    <h4>Right to Safety</h4>
+                    <p>Products and services should not pose any risk to your health or safety.</p>
+                </div>
+                <div class="right-item" onclick="showRightDetails('right_to_choice')">
+                    <h4>Right to Choice</h4>
+                    <p>You have the right to choose from a variety of products at competitive prices.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Details Modal -->
+        <div id="rightDetailsModal" class="card hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 90%; max-width: 500px; background: white; border: 2px solid #007bff;">
+            <h3 id="rightTitle"></h3>
+            <div id="rightContent"></div>
+            <button class="btn" onclick="closeRightDetails()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const mockApiSuggestions = {
+            'product_defect': ['Check product warranty coverage','Document the defect with photos','Contact manufacturer directly','File complaint with consumer protection agency'],
+            'service_issue': ['Review service agreement terms','Document all communication attempts','Request service manager escalation','Consider alternative dispute resolution'],
+            'billing_problem': ['Review billing statements carefully','Contact billing department immediately','Request detailed breakdown of charges','Keep records of all communications'],
+            'delivery_delay': ['Check tracking information','Contact shipping carrier','Review delivery terms and conditions','Document any financial losses due to delay'],
+            'customer_service': ['Request to speak with supervisor','Document interaction details','Follow company escalation process','Consider formal complaint if unresolved']
+        };
+
+        const rightsInfo = {
+            'right_to_return': {title:'Right to Return Products',content:'<p><strong>What it means:</strong> You can return products within a reasonable timeframe if they don\'t meet your expectations.</p><p><strong>Time limit:</strong> Usually 14-30 days depending on the product and retailer.</p><p><strong>Conditions:</strong> Products should be in original condition unless defective.</p><p><strong>How to exercise:</strong> Contact the retailer with your receipt and explain the reason for return.</p>'},
+            'right_to_refund': {title:'Right to Full Refund',content:'<p><strong>What it means:</strong> You\'re entitled to get your money back for defective or unsatisfactory products/services.</p><p><strong>When applicable:</strong> Product defects, service failures, misrepresentation, or breach of contract.</p><p><strong>Process:</strong> Contact the seller first, then escalate to consumer protection if needed.</p><p><strong>Documentation:</strong> Keep receipts, warranties, and communication records.</p>'},
+            'right_to_repair': {title:'Right to Repair or Replacement',content:'<p><strong>What it means:</strong> Defective products should be repaired or replaced at no cost to you.</p><p><strong>Warranty period:</strong> Applies during warranty period or reasonable expectation of product life.</p><p><strong>Options:</strong> Repair, replacement, or refund - usually seller\'s choice initially.</p><p><strong>Timeline:</strong> Repairs should be completed within reasonable timeframe.</p>'},
+            'right_to_information': {title:'Right to Clear Information',content:'<p><strong>What it means:</strong> You have the right to accurate, clear information about products and services.</p><p><strong>Includes:</strong> Price, features, limitations, terms and conditions, warranties.</p><p><strong>Protection:</strong> Against misleading advertisements and hidden terms.</p><p><strong>Remedies:</strong> Compensation for losses due to misinformation.</p>'},
+            'right_to_safety': {title:'Right to Safe Products',content:'<p><strong>What it means:</strong> Products and services should not harm your health or safety.</p><p><strong>Standards:</strong> Must meet safety regulations and industry standards.</p><p><strong>Recalls:</strong> Right to be informed about product recalls and safety issues.</p><p><strong>Compensation:</strong> Right to compensation for injuries caused by unsafe products.</p>'},
+            'right_to_choice': {title:'Right to Choose',content:'<p><strong>What it means:</strong> Access to variety of products at competitive prices without unfair practices.</p><p><strong>Fair competition:</strong> Protection against monopolistic practices.</p><p><strong>Price transparency:</strong> Clear pricing without hidden charges.</p><p><strong>No coercion:</strong> Right to make decisions without undue pressure.</p>'}
+        };
+
+        document.getElementById('complaintForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            const formData = new FormData(this);
+            const complaintData = Object.fromEntries(formData);
+            console.log('Submitting complaint:', complaintData);
+            alert('Complaint submitted successfully! Complaint ID: #' + Math.floor(Math.random() * 100000));
+            this.reset();
+            document.getElementById('suggestionsContainer').classList.add('hidden');
+        });
+
+        function getSuggestions() {
+            const complaintType = document.getElementById('complaintType').value;
+            const suggestionsContainer = document.getElementById('suggestionsContainer');
+            const suggestionsContent = document.getElementById('suggestionsContent');
+            if(!complaintType){ alert('Please select a complaint type first'); return; }
+            setTimeout(()=>{
+                const suggestions = mockApiSuggestions[complaintType] || ['Contact customer support for specific guidance'];
+                suggestionsContent.innerHTML = suggestions.map(s=>`<div class="suggestion-item">${s}</div>`).join('');
+                suggestionsContainer.classList.remove('hidden');
+            },500);
+        }
+
+        function showRights() {
+            const rightsSection = document.getElementById('rightsSection');
+            rightsSection.classList.toggle('hidden');
+            if(!rightsSection.classList.contains('hidden')) rightsSection.scrollIntoView({behavior:'smooth'});
+        }
+
+        function showRightDetails(rightKey){
+            const modal = document.getElementById('rightDetailsModal');
+            const title = document.getElementById('rightTitle');
+            const content = document.getElementById('rightContent');
+            const rightInfo = rightsInfo[rightKey];
+            if(rightInfo){ title.textContent = rightInfo.title; content.innerHTML = rightInfo.content; modal.classList.remove('hidden'); }
+        }
+
+        function closeRightDetails(){ document.getElementById('rightDetailsModal').classList.add('hidden'); }
+        function trackComplaint(){ const complaintId=prompt('Enter your complaint ID:'); if(complaintId){ alert(`Tracking complaint ${complaintId}:\nStatus: Under Review\nEstimated resolution: 3-5 business days\nNext update: Tomorrow at 2:00 PM`); } }
+        function contactSupport(){ alert('Support Contact Information:\nPhone: 1-800-SUPPORT\nEmail: support@company.com\nLive Chat: Available 24/7\nOffice Hours: Mon-Fri 9AM-6PM'); }
+        document.addEventListener('click',function(e){ if(e.target===document.getElementById('rightDetailsModal')) closeRightDetails(); });
+    </script>
+</body>
+</html>
