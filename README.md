@@ -1,2 +1,2 @@
 # hactopus
-Online dispute manager
+Online dispute resolver
