@@ -104,9 +104,27 @@ body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 40px;
 
         <div class="card">
             <h2>Quick Actions</h2>
-            <button class="btn btn-success" onclick="showRights()">View My Rights</button>
+            <a href="rights.html" 
+            style="display:inline-block; padding:20px 20px; background-color:green; color:white; text-decoration:none; border-radius:10px;">
+            View My Rights
+         </a>
+         
             <button class="btn" onclick="trackComplaint()">Track Complaint</button>
-            <button class="btn btn-info" onclick="contactSupport()">Contact Support</button>
+            <a href="contact.html" 
+            style="display:inline-block; 
+                   padding:10px 40px; 
+                   background-color:#17a2b8; 
+                   color:white; 
+                   text-decoration:none; 
+                   border-radius:4px; 
+                   font-size:16px; 
+                   font-weight:bold; 
+                   text-align:center; 
+                   width:200px; 
+                   box-sizing:border-box;">
+            Contact Support
+         </a>
+         
 
             <div class="complaint-history">
                 <h3>Recent Complaints</h3>
@@ -143,6 +161,10 @@ body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 40px;
         <button class="btn" onclick="closeRightDetails()">Close</button>
     </div>
 </div>
+
+  
+  
+
 
 <script>
 const mockApiSuggestions = {
